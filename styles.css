@@ -1,0 +1,191 @@
+/* Base Styles */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+/* Layout */
+header {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Contact Section */
+.contact-info {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.contact-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.contact-item i {
+    font-size: 1rem;
+}
+
+.contact-item span, 
+.contact-item a {
+    color: #ffffff;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+/* About Me Section */
+.about-me {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.profile-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.intro-text {
+    line-height: 1.8;
+    color: #e0e0e0;
+}
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.skill-tag {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Project Section */
+.project {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: relative;  /* 추가 */
+}
+
+.project h2 {
+    color: #ffffff;
+    margin: 0;
+}
+
+.brief {
+    color: #b0b0b0;
+    margin: 0.5rem 0;
+}
+
+.content {
+    display: none;
+    grid-template-columns: 0.4fr 0.6fr;  /* 40:60 비율로 변경 */
+    gap: 2rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #2d2d2d;
+}
+
+.project.active {
+    padding: 2rem;
+}
+
+.project.active .content {
+    display: grid;
+}
+
+.gif-container {
+    max-width: 400px;  /* GIF 최대 너비 축소 */
+    width: 100%;
+}
+
+.description {
+    padding-left: 1rem;  /* 설명 텍스트 여백 추가 */
+}
+
+.description h3 {
+    margin-top: 0;
+    color: #ffffff;
+    font-size: 1.3rem;
+}
+
+.description ul {
+    padding-left: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.click-guide {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 1.rem;
+    opacity: 0.6;
+}
+
+.project.active .click-guide {
+    display: none;
+}
+.gif-container img {
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .contact-info {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (hover: hover) {
+    .project:hover {
+        background-color: #252525;
+        transform: translateY(-2px);
+    }
+}

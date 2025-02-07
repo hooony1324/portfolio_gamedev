@@ -1,17 +1,65 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        img { width: 200px; border-radius: 10px; }
-    </style>
+    <title>게임 개발 포트폴리오</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to My Portfolio</h1>
-    <p>안녕하세요! 저는 개발자입니다.</p>
-    <img src="resource/map_collisiontest.gif" alt="테스트 GIF">
+    <header>
+        <h1>Game Developer Portfolio</h1>
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>hooony1324@gmail.com</span>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <span>010-3251-6989</span>
+            </div>
+            <div class="contact-item" onclick="window.open('https://github.com/hooony1324', '_blank')">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </div>
+            <div class="contact-item" onclick="window.open('https://www.youtube.com/@cogason1616', '_blank')">
+                <i class="fab fa-youtube"></i>
+                <span>Dev Log</span>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <section class="about-me">
+            <h2>About Me</h2>
+            <div class="profile">
+                <div class="profile-content">
+                    <h3>게임 개발자 홍길동입니다</h3>
+                    <p class="intro-text">
+                        3년차 게임 개발자로서 언리얼 엔진과 유니티를 활용한 게임 개발에 전문성을 가지고 있습니다.
+                        물리 기반 캐릭터 컨트롤러와 전투 시스템 구현에 깊은 관심을 가지고 있으며,
+                        최적화된 게임플레이 경험을 제공하는 것을 목표로 합니다.
+                    </p>
+                    <div class="skills">
+                        <span class="skill-tag">Unreal Engine</span>
+                        <span class="skill-tag">Unity</span>
+                        <span class="skill-tag">C++</span>
+                        <span class="skill-tag">C#</span>
+                        <span class="skill-tag">게임 물리</span>
+                        <span class="skill-tag">UI/UX</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="projects-container">
+            <!-- 프로젝트들이 JavaScript로 여기에 삽입됩니다 -->
+        </div>
+    </main>
+
+    <script src="projects.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
