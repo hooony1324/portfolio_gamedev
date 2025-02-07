@@ -6,18 +6,19 @@ function toggleProject(element) {
     element.classList.toggle('active');
 }
 
-window.onload = function() {
+function showProjects(category) {
     const projectsContainer = document.getElementById('projects-container');
-    
-    projects.forEach(project => {
+    projectsContainer.innerHTML = '';
+
+    projects[category].forEach(project => {
         const mediaItemsHTML = project.mediaItems.map(item => `
             <div class="media-item">
-                <img src="${item.src}" alt="${item.caption}">
+                <img src="assets/${item.src}" alt="${item.caption}">
                 <p class="media-caption">${item.caption}</p>
             </div>
         `).join('');
 
-        const projectHTML = `
+        const projectHTML = ` 
             <section class="project" onclick="toggleProject(this)">
                 <h2>${project.title}</h2>
                 <p class="brief">${project.brief}</p>
@@ -27,7 +28,7 @@ window.onload = function() {
                         ${mediaItemsHTML}
                     </div>
                     <div class="description">
-                        <h3>주요 기능</h3>
+                        <h3>${project.mainFeatures}</h3>
                         <ul>
                             ${project.features.map(feature => `<li>${feature}</li>`).join('')}
                         </ul>
@@ -38,4 +39,18 @@ window.onload = function() {
         `;
         projectsContainer.innerHTML += projectHTML;
     });
+}
+
+window.onload = function () {
+    const tabs = document.querySelectorAll('.tab-button');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            showProjects(tab.dataset.category);
+        });
+    });
+
+    // 초기 로드시 Unity 프로젝트 표시
+    showProjects('unity');
 };
