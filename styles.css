@@ -172,17 +172,105 @@ main {
 
 /* Media Queries */
 @media (max-width: 768px) {
+    /* 헤더 영역 */
+    header {
+        padding: 1.5rem 0;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    /* About Me 섹션 */
+    .about-me {
+        padding: 1.5rem;
+    }
+
+    .intro-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .skills {
+        gap: 0.6rem;
+    }
+
+    .skill-tag {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* 프로젝트 섹션 */
+    .project {
+        padding: 1.2rem;
+    }
+
+    .project h2 {
+        font-size: 1.4rem;
+    }
+
+    .brief {
+        font-size: 0.9rem;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .media-item {
+        max-width: 360px;
+        margin: 0 auto;
+    }
+
+    .description {
+        padding: 0.5rem;
+    }
+
+    .description h3 {
+        font-size: 1.2rem;
+    }
+
+    .description ul {
+        font-size: 0.9rem;
+    }
+
+    /* 연락처 정보 */
     .contact-info {
+        padding: 0 1rem;
         flex-direction: column;
         align-items: center;
         gap: 1rem;
     }
 
-    .content {
-        grid-template-columns: 1fr;
+    .contact-item {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .media-gallery {
+        max-height: none;
+        padding-right: 0;
+    }
+
+    .media-item img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
     }
 }
 
+/* 더 작은 화면 대응 */
+@media (max-width: 480px) {
+    main {
+        padding: 1rem;
+    }
+
+    .media-item {
+        max-width: 300px;
+    }
+}
 @media (hover: hover) {
     .project:hover {
         background-color: #252525;
