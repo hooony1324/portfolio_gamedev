@@ -1,56 +1,38 @@
-function toggleProject(element) {
-    const currentActive = document.querySelector('.project.active');
-    if (currentActive && currentActive !== element) {
-        currentActive.classList.remove('active');
-    }
-    element.classList.toggle('active');
-}
-
-function showProjects(category) {
-    const projectsContainer = document.getElementById('projects-container');
-    projectsContainer.innerHTML = '';
-
-    projects[category].forEach(project => {
-        const mediaItemsHTML = project.mediaItems.map(item => `
-            <div class="media-item">
-                <img src="assets/${item.src}" alt="${item.caption}">
-                <p class="media-caption">${item.caption}</p>
-            </div>
-        `).join('');
-
-        const projectHTML = ` 
-            <section class="project" onclick="toggleProject(this)">
-                <h2>${project.title}</h2>
-                <p class="brief">${project.brief}</p>
-                <span class="click-guide">click</span>
-                <div class="content">
-                    <div class="media-gallery">
-                        ${mediaItemsHTML}
-                    </div>
-                    <div class="description">
-                        <h3>${project.mainFeatures}</h3>
-                        <ul>
-                            ${project.features.map(feature => `<li>${feature}</li>`).join('')}
-                        </ul>
-                        <p>${project.description}</p>
-                    </div>
-                </div>
-            </section>
-        `;
-        projectsContainer.innerHTML += projectHTML;
+async function loadProjectFiles() {
+    const projectFiles = ['project_unity.md'];
+    const tabsContainer = document.querySelector('.project-tabs');
+    
+    projectFiles.forEach((file, index) => {
+        const button = document.createElement('button');
+        button.className = 'tab-button' + (index === 0 ? ' active' : '');
+        button.textContent = file.replace('project_', '').replace('.md', '');
+        button.addEventListener('click', () => loadProjectContent(file));
+        tabsContainer.appendChild(button);
     });
+
+    // 초기 프로젝트 로드
+    await loadProjectContent(projectFiles[0]);
 }
 
-window.onload = function () {
-    const tabs = document.querySelectorAll('.tab-button');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            showProjects(tab.dataset.category);
+async function loadProjectContent(filename) {
+    try {
+        const response = await fetch(`projects/${filename}`);
+        const markdown = await response.text();
+        const html = marked.parse(markdown);
+        document.getElementById('project-content').innerHTML = html;
+
+        // 활성 버튼 스타일 업데이트
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+            if (button.textContent.toLowerCase() === filename.replace('project_', '').replace('.md', '')) {
+                button.classList.add('active');
+            }
         });
-    });
+    } catch (error) {
+        console.error('Error loading project:', error);
+    }
+}
 
-    // 초기 로드시 Unity 프로젝트 표시
-    showProjects('unity');
-};
+document.addEventListener('DOMContentLoaded', loadProjectFiles);
+
+
