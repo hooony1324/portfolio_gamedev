@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+
+        {%- include head.html -%}
+
+        {% assign reversed_posts = site.posts | reverse %}
+
+        {% if reversed_posts %}
+            <link rel="next" href="{{site.baseurl}}{{reversed_posts.first.url}}" />
+        {% endif %}
+        
+        <!-- JavaScript 파일 (defer로 HTML 파싱 후 실행) -->
+        <script defer src="{{ site.baseurl }}/assets/js/videoplayer.js"></script>
+        
+        <!-- CSS 파일 추가 -->
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/videoplayer.css">
+
+    </head>
+    <body data-baseurl="{{ site.baseurl }}">
+        <div class="book">
+
+            {%- include toc-date.html -%}
+
+            <div class="book-body">
+                <div class="book-header" role="navigation"></div>
+
+                <div class="body-inner">
+                    <div class="main-content">
+                        <h2 id="video-title"></h2>
+                        <div id="main-player">
+                            <iframe id="main-video" width="100%" height="500" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <p id="video-description" class="video-description"></p>
+                    </div>
+
+                    <div id="video-grid" class="video-grid"></div>
+                </div>
+            </div>
+
+            <script>
+                var gitbook = gitbook || [];
+                gitbook.push(function() {
+                    gitbook.page.hasChanged({%- include metadata-home.json.tpl -%});
+                });
+            </script>
+        </div>
+
+        {%- include footer.html -%}
+
+    </body>
+</html>
