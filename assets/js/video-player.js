@@ -250,40 +250,38 @@ function updateVideoInfo(video) {
     videoTitle.textContent = video.title;
     videoDescription.textContent = video.description;
     
-    // docPath가 있을 때만 문서 바로가기 표시
     if (video.docPath && docLink) {
         docLink.style.display = 'inline-block';
-        const relativePath = video.docPath.replace('/pages/projects/', '');
-        console.log('6-1. Document path check:', {
-            docPath: video.docPath,
-            relativePath: relativePath,
-            isGitHubPages: window.location.hostname.includes('github.io')
-        });
-        
-        docLink.href = relativePath;
+        console.log('6-1. Document path:', video.docPath);
         
         docLink.onclick = function(e) {
             e.preventDefault();
             
             const sidebarLinks = document.querySelectorAll('.book-summary ul.summary li a');
-            console.log('6-2. Looking for link with path:', relativePath);
+            const targetPath = video.docPath.toLowerCase()
+                                          .replace('{{ site.baseurl }}', '')
+                                          .replace('/pages/projects/', '')
+                                          .replace(/\.html$/, '')
+                                          .replace(/\/$/, '');
+            
+            console.log('6-2. Looking for link with path:', targetPath);
             
             let found = false;
             for (const link of sidebarLinks) {
-                const linkHref = link.getAttribute('href');
-                console.log('6-3. Checking link:', {
-                    href: linkHref,
+                const linkHref = link.getAttribute('href').toLowerCase()
+                                   .replace('/portfolio_gamedev', '')
+                                   .replace('/pages/projects/', '')
+                                   .replace(/\.html$/, '')
+                                   .replace(/\/$/, '')
+                                   .replace(/%20/g, ' ');  // URL 인코딩된 공백 처리
+                
+                console.log('6-3. Comparing paths:', {
+                    target: targetPath,
+                    link: linkHref,
                     text: link.textContent.trim()
                 });
                 
-                // 경로 정규화 및 비교
-                const normalizedLinkPath = linkHref?.replace('/portfolio_gamedev/pages/projects/', '')
-                                                 ?.replace('/portfolio_gamedev/', '')
-                                                 ?.replace('.html', '')
-                                                 ?.replace(/\/$/, '');
-                const normalizedRelativePath = relativePath.replace(/\/$/, '');
-                
-                if (normalizedLinkPath === normalizedRelativePath) {
+                if (linkHref.includes(targetPath) || targetPath.includes(linkHref)) {
                     console.log('6-4. Found matching link, clicking');
                     link.click();
                     found = true;
