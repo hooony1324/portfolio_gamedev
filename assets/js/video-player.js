@@ -77,27 +77,37 @@ function loadVideoPlayer() {
             function createPlayer() {
                 if (typeof YT === 'undefined' || !YT.loaded) {
                     console.log('3-5. Waiting for YouTube API...');
-                    setTimeout(createPlayer, 100);
+                    setTimeout(createPlayer, 500);
                     return;
                 }
 
                 if (state.player) {
                     console.log('3-6. Destroying existing player');
                     state.player.destroy();
+                    state.player = null;
                 }
 
-                state.player = new YT.Player('player', {
-                    height: '100%',
-                    width: '100%',
-                    videoId: state.currentVideoId,
-                    playerVars: {
-                        'playsinline': 1,
-                        'rel': 0
-                    },
-                    events: {
-                        'onReady': onPlayerReady
-                    }
-                });
+                try {
+                    state.player = new YT.Player('player', {
+                        height: '100%',
+                        width: '100%',
+                        videoId: state.currentVideoId,
+                        playerVars: {
+                            'playsinline': 1,
+                            'rel': 0
+                        },
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onError': (event) => {
+                                console.error('YouTube Player Error:', event.data);
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error creating YouTube player:', error);
+                    setTimeout(createPlayer, 500);
+                    return;
+                }
 
                 createVideoGrid(videoDatas);
                 updateVideoInfo(videoDatas[0]);
@@ -123,7 +133,7 @@ function onPlayerReady(event) {
 function createVideoGrid(videos) {
     console.log('5. Creating video grid with', videos.length, 'videos');
     const grid = document.getElementById('video-grid');
-    const state = window.videoPlayerState;  // state 객체 참조 추가
+    const state = window.videoPlayerState;
     
     grid.innerHTML = ''; // 기존 그리드 초기화
     
@@ -140,20 +150,25 @@ function createVideoGrid(videos) {
             if (state.currentVideoId !== video.id) {
                 console.log('5-2. Switching to video:', video.title);
                 state.currentVideoId = video.id;
-                if (state.player && typeof state.player.loadVideoById === 'function') {
-                    state.player.loadVideoById(video.id);
-                    updateVideoInfo(video);
-                    window.scrollTo(0, 0);
-                } else {
-                    console.log('5-3. Player not ready, retrying...');
-                    setTimeout(() => {
-                        if (state.player && typeof state.player.loadVideoById === 'function') {
-                            state.player.loadVideoById(video.id);
-                            updateVideoInfo(video);
-                            window.scrollTo(0, 0);
-                        }
-                    }, 1000);
-                }
+                
+                // 플레이어 상태 확인 및 재시도 로직 개선
+                const tryLoadVideo = (attempts = 0) => {
+                    if (attempts >= 10) { // 최대 10번 시도
+                        console.error('Failed to load video after multiple attempts');
+                        return;
+                    }
+
+                    if (state.player && typeof state.player.loadVideoById === 'function') {
+                        state.player.loadVideoById(video.id);
+                        updateVideoInfo(video);
+                        window.scrollTo(0, 0);
+                    } else {
+                        console.log(`5-3. Player not ready, attempt ${attempts + 1}`);
+                        setTimeout(() => tryLoadVideo(attempts + 1), 500); // 0.5초 간격으로 재시도
+                    }
+                };
+
+                tryLoadVideo();
             }
         });
         
