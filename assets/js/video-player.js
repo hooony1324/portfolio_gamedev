@@ -170,11 +170,15 @@ function updateVideoInfo(video) {
     videoTitle.textContent = video.title;
     videoDescription.textContent = video.description;
     
+    // GitHub Pages 환경 체크
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    
     // 현재 docPath와 실제 경로 로깅
     const relativePath = video.docPath.replace('/pages/projects/', '');
     console.log('6-1. Document path check:', {
         docPath: video.docPath,
-        relativePath: relativePath
+        relativePath: relativePath,
+        isGitHubPages: isGitHubPages
     });
     
     // GitBook 라우팅을 위한 상대 경로 사용
@@ -194,7 +198,13 @@ function updateVideoInfo(video) {
                 text: link.textContent.trim()
             });
             
-            if (link.getAttribute('href')?.includes(relativePath)) {
+            // GitHub Pages에서는 portfolio_gamedev 경로 포함 여부 확인
+            const linkHref = link.getAttribute('href');
+            const shouldMatch = isGitHubPages 
+                ? linkHref?.includes('/portfolio_gamedev/' + relativePath)
+                : linkHref?.includes(relativePath);
+            
+            if (shouldMatch) {
                 console.log('6-4. Found matching link, clicking');
                 link.click();
                 return;
