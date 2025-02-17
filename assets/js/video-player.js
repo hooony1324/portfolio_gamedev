@@ -52,75 +52,83 @@ function initializeVideoIfReady() {
 
 function loadVideoPlayer() {
     const state = window.videoPlayerState;
-    console.log('3. Starting to load video player');
     const videoContent = document.getElementById('video-content');
     const loadingWrapper = document.getElementById('loading-wrapper');
     
     const baseUrl = '/' + getBaseUrl();
-    console.log('3-1. Fetching videos from:', `${baseUrl}/assets/data/videos.json`);
     
     fetch(`${baseUrl}/assets/data/videos.json`)
-        .then(response => {
-            console.log('3-2. Fetch response status:', response.status);
-            return response.json();
-        })
+        .then(response => response.json())
         .then(videoDatas => {
-            console.log('3-3. Received video data:', videoDatas);
-            
             if (!videoDatas || videoDatas.length === 0) {
                 throw new Error('No video data available');
             }
 
             state.currentVideoId = videoDatas[0].id;
-            console.log('3-4. Setting up player with first video:', state.currentVideoId);
             
             function createPlayer() {
-                if (typeof YT === 'undefined' || !YT.loaded) {
-                    console.log('3-5. Waiting for YouTube API...');
-                    setTimeout(createPlayer, 500);
-                    return;
-                }
+                // YouTube API 로드 상태 체크를 위한 Promise 생성
+                const checkYouTubeAPI = () => {
+                    return new Promise((resolve, reject) => {
+                        if (typeof YT !== 'undefined' && YT.loaded) {
+                            resolve();
+                        } else {
+                            const timeoutId = setTimeout(() => {
+                                reject(new Error('YouTube API load timeout'));
+                            }, 10000); // 10초 타임아웃
 
-                if (state.player) {
-                    console.log('3-6. Destroying existing player');
-                    state.player.destroy();
-                    state.player = null;
-                }
-
-                try {
-                    state.player = new YT.Player('player', {
-                        height: '100%',
-                        width: '100%',
-                        videoId: state.currentVideoId,
-                        playerVars: {
-                            'playsinline': 1,
-                            'rel': 0
-                        },
-                        events: {
-                            'onReady': onPlayerReady,
-                            'onError': (event) => {
-                                console.error('YouTube Player Error:', event.data);
-                            }
+                            const checkInterval = setInterval(() => {
+                                if (typeof YT !== 'undefined' && YT.loaded) {
+                                    clearTimeout(timeoutId);
+                                    clearInterval(checkInterval);
+                                    resolve();
+                                }
+                            }, 500);
                         }
                     });
-                } catch (error) {
-                    console.error('Error creating YouTube player:', error);
-                    setTimeout(createPlayer, 500);
-                    return;
-                }
+                };
 
-                createVideoGrid(videoDatas);
-                updateVideoInfo(videoDatas[0]);
+                // YouTube API 로드 및 플레이어 생성
+                checkYouTubeAPI()
+                    .then(() => {
+                        if (state.player) {
+                            state.player.destroy();
+                            state.player = null;
+                        }
 
-                console.log('3-7. Showing video content');
-                loadingWrapper.style.display = 'none';
-                videoContent.style.display = 'block';
+                        state.player = new YT.Player('player', {
+                            height: '100%',
+                            width: '100%',
+                            videoId: state.currentVideoId,
+                            playerVars: {
+                                'playsinline': 1,
+                                'rel': 0,
+                                'cookie': 'CONSENT=YES+' // 쿠키 동의 명시
+                            },
+                            events: {
+                                'onReady': onPlayerReady,
+                                'onError': (event) => {
+                                    console.error('Player Error:', event.data);
+                                }
+                            }
+                        });
+
+                        createVideoGrid(videoDatas);
+                        updateVideoInfo(videoDatas[0]);
+                        
+                        loadingWrapper.style.display = 'none';
+                        videoContent.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('Player initialization error:', error);
+                        loadingWrapper.innerHTML = 'Error initializing video player';
+                    });
             }
 
             createPlayer();
         })
         .catch(error => {
-            console.error('3-8. Error loading video data:', error);
+            console.error('Content load error:', error);
             loadingWrapper.innerHTML = 'Error loading content';
         });
 }
@@ -131,14 +139,13 @@ function onPlayerReady(event) {
 }
 
 function createVideoGrid(videos) {
-    console.log('5. Creating video grid with', videos.length, 'videos');
+    debugLog('Creating video grid', { count: videos.length });
     const grid = document.getElementById('video-grid');
     const state = window.videoPlayerState;
     
-    grid.innerHTML = ''; // 기존 그리드 초기화
+    grid.innerHTML = '';
     
     videos.forEach((video, index) => {
-        console.log(`5-1. Adding video ${index + 1}:`, video.title);
         const videoItem = document.createElement('div');
         videoItem.className = 'video-item';
         videoItem.innerHTML = `
@@ -148,27 +155,14 @@ function createVideoGrid(videos) {
         
         videoItem.addEventListener('click', () => {
             if (state.currentVideoId !== video.id) {
-                console.log('5-2. Switching to video:', video.title);
+                debugLog('Switching video', { title: video.title });
                 state.currentVideoId = video.id;
                 
-                // 플레이어 상태 확인 및 재시도 로직 개선
-                const tryLoadVideo = (attempts = 0) => {
-                    if (attempts >= 10) { // 최대 10번 시도
-                        console.error('Failed to load video after multiple attempts');
-                        return;
-                    }
-
-                    if (state.player && typeof state.player.loadVideoById === 'function') {
-                        state.player.loadVideoById(video.id);
-                        updateVideoInfo(video);
-                        window.scrollTo(0, 0);
-                    } else {
-                        console.log(`5-3. Player not ready, attempt ${attempts + 1}`);
-                        setTimeout(() => tryLoadVideo(attempts + 1), 500); // 0.5초 간격으로 재시도
-                    }
-                };
-
-                tryLoadVideo();
+                if (state.player && typeof state.player.loadVideoById === 'function') {
+                    state.player.loadVideoById(video.id);
+                    updateVideoInfo(video);
+                    window.scrollTo(0, 0);
+                }
             }
         });
         
@@ -296,4 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// 디버그 로그 최소화
+function debugLog(message, data) {
+    if (window.videoPlayerDebug) {
+        console.log(message, data);
+    }
+}
 
