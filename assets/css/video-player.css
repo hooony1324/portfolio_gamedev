@@ -110,3 +110,57 @@
     font-size: 14px;
     color: #030303;
 }
+
+/* White 테마 (기본) - 기존 스타일 유지 */
+
+/* Sepia 테마 */
+.book.color-theme-1 .video-info {
+    background: #f3eacb;
+}
+
+.book.color-theme-1 .video-info h2 {
+    color: #704214;
+}
+
+.book.color-theme-1 .video-info p {
+    color: #704214;
+}
+
+.book.color-theme-1 .doc-link {
+    background: #704214;
+    color: #f3eacb;
+}
+
+.book.color-theme-1 .doc-link:hover {
+    background: #73553c;
+}
+
+.book.color-theme-1 .video-item h3 {
+    color: #704214;
+}
+
+/* Night 테마 */
+.book.color-theme-2 .video-info {
+    background: #2d3143;
+}
+
+.book.color-theme-2 .video-info h2 {
+    color: #bdcadb;
+}
+
+.book.color-theme-2 .video-info p {
+    color: #bdcadb;
+}
+
+.book.color-theme-2 .doc-link {
+    background: #3eb1d0;
+    color: #ffffff;
+}
+
+.book.color-theme-2 .doc-link:hover {
+    background: #2b7d94;
+}
+
+.book.color-theme-2 .video-item h3 {
+    color: #bdcadb;
+}

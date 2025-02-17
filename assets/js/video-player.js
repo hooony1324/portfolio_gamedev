@@ -173,7 +173,7 @@ function updateVideoInfo(video) {
     // GitHub Pages 환경 체크
     const isGitHubPages = window.location.hostname.includes('github.io');
     
-    // 현재 docPath와 실제 경로 로깅
+    // docPath에서 /pages/projects/ 제거하고 상대 경로로 변환
     const relativePath = video.docPath.replace('/pages/projects/', '');
     console.log('6-1. Document path check:', {
         docPath: video.docPath,
@@ -181,37 +181,40 @@ function updateVideoInfo(video) {
         isGitHubPages: isGitHubPages
     });
     
-    // GitBook 라우팅을 위한 상대 경로 사용
     docLink.href = relativePath;
     
-    // 링크 클릭 이벤트 처리
     docLink.onclick = function(e) {
         e.preventDefault();
         
-        // 해당 프로젝트의 탭 찾기
         const sidebarLinks = document.querySelectorAll('.book-summary ul.summary li a');
         console.log('6-2. Looking for link with path:', relativePath);
         
+        let found = false;
         for (const link of sidebarLinks) {
+            const linkHref = link.getAttribute('href');
             console.log('6-3. Checking link:', {
-                href: link.getAttribute('href'),
+                href: linkHref,
                 text: link.textContent.trim()
             });
             
-            // GitHub Pages에서는 portfolio_gamedev 경로 포함 여부 확인
-            const linkHref = link.getAttribute('href');
-            const shouldMatch = isGitHubPages 
-                ? linkHref?.includes('/portfolio_gamedev/' + relativePath)
-                : linkHref?.includes(relativePath);
+            // 경로 정규화 및 비교
+            const normalizedLinkPath = linkHref?.replace('/portfolio_gamedev/pages/projects/', '')
+                                             ?.replace('/portfolio_gamedev/', '')
+                                             ?.replace('.html', '')
+                                             ?.replace(/\/$/, '');
+            const normalizedRelativePath = relativePath.replace(/\/$/, '');
             
-            if (shouldMatch) {
+            if (normalizedLinkPath === normalizedRelativePath) {
                 console.log('6-4. Found matching link, clicking');
                 link.click();
-                return;
+                found = true;
+                break;
             }
         }
         
-        console.log('6-5. No matching link found');
+        if (!found) {
+            console.log('6-5. No matching link found');
+        }
     };
 }
 
