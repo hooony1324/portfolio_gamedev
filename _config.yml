@@ -21,7 +21,6 @@ toc:
   h_min:   1
   h_max:   3
 
-# customize the link favicon in header, will be {{site.baseurl}}/{{site.favicon_path}}
 favicon_path:     /assets/gitbook/images/favicon.ico
 
 # markdown render engine.
@@ -43,9 +42,6 @@ markdown_ext:             markdown,mkdown,mkdn,mkd,md
 # Permalinks
 permalink:                /:categories/:year-:month-:day-:title:output_ext
 
-# Disqus comments
-# disqushandler:            sighingnow
-
 exclude:
   - _drafts
 
@@ -59,11 +55,6 @@ collections:
 
 include:
   - _others
-
-ordered_collections:
-  - posts
-  - pages
-  - others
 
 page_width: 800px
 
@@ -81,16 +72,3 @@ github_username:
 
 gitbook:
   theme: night
-
-sidebar:
-  sections:
-    - title: "프로그래밍"
-      items:
-        - title: "Client Programming"
-          url: "/programming/client-programming"
-        - title: "Server Programming"
-          url: "/programming/server-programming"
-    - title: "프로젝트"
-      items:
-        - title: "Katana Zero"
-          url: "/projects/katanazero"

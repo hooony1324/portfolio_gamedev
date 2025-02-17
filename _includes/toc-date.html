@@ -48,59 +48,41 @@
 
             <li class="divider"></li>
 
-            <!-- Programming 섹션 -->
-            {% assign programming_posts = site.posts | where: "category", "Programming" %}
-            {% if programming_posts.size > 0 %}
-                <li class="chapter-title">프로그래밍</li>
-                {% for post in programming_posts %}
-                    {% if page.url == post.url %}
-                    <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
-                    {% else %}
-                    <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{post.url}}">
-                    {% endif %}
-                        <a href="{{site.baseurl}}{{post.url}}" onclick="pageScrollToTop(this)">
-                            {{ post.title | escape }}
-                        </a>
-                        {% if site.toc.enabled %}
-                            {% if page.url == post.url %}
-                                {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
+            {% assign all_docs = site.posts | concat: site.pages %}
+            {% assign categories = all_docs | group_by: "category" | sort: "name" %}
+            
+            {% for category in categories %}
+                {% if category.name != "" and category.name != nil %}
+                    <li class="chapter-title">{{ category.name }}</li>
+                    {% for doc in category.items %}
+                        {% if doc.title != nil and doc.path contains '_posts/' or doc.path contains '_pages/projects/' %}
+                            {% if page.url == doc.url %}
+                            <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{doc.url}}">
+                            {% else %}
+                            <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{doc.url}}">
                             {% endif %}
+                                <a href="{{site.baseurl}}{{doc.url}}" onclick="pageScrollToTop(this)">
+                                    {{ doc.title | escape }}
+                                </a>
+                                {% if site.toc.enabled %}
+                                    {% if page.url == doc.url %}
+                                        {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
+                                    {% endif %}
+                                {% endif %}
+                            </li>
                         {% endif %}
-                    </li>
-                {% endfor %}
-            {% endif %}
-
-            <li class="divider"></li>
-
-            <!-- Projects 섹션 -->
-            {% assign project_pages = site.pages | where: "category", "Projects" %}
-            {% if project_pages.size > 0 %}
-                <li class="chapter-title">프로젝트</li>
-                {% for project_page in project_pages %}
-                    {% if project_page.path contains '_pages/projects/' %}
-                    {% if page.url == project_page.url %}
-                    <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{project_page.url}}">
-                    {% else %}
-                    <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{project_page.url}}">
-                    {% endif %}
-                        <a href="{{site.baseurl}}{{project_page.url}}" onclick="pageScrollToTop(this)">
-                            {{ project_page.title | escape }}
-                        </a>
-                        {% if site.toc.enabled %}
-                            {% if page.url == project_page.url %}
-                                {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
-                            {% endif %}
-                        {% endif %}
-                    </li>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-
-            <li class="divider"></li>
+                    {% endfor %}
+                    
+                    {% unless forloop.last %}
+                        <li class="divider"></li>
+                    {% endunless %}
+                {% endif %}
+            {% endfor %}
 
             <!-- Dev Log 섹션 (단독 항목) -->
             {% assign devlog = site.others | where: "title", "Dev Log" | first %}
             {% if devlog %}
+                <li class="divider"></li>
                 {% if page.url == devlog.url %}
                 <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{devlog.url}}">
                 {% else %}
