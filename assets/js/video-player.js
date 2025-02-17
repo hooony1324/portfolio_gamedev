@@ -67,7 +67,6 @@ function loadVideoPlayer() {
             state.currentVideoId = videoDatas[0].id;
             
             function createPlayer() {
-                // YouTube API 로드 상태 체크를 위한 Promise 생성
                 const checkYouTubeAPI = () => {
                     return new Promise((resolve, reject) => {
                         if (typeof YT !== 'undefined' && YT.loaded) {
@@ -95,36 +94,46 @@ function loadVideoPlayer() {
                             state.player = null;
                         }
 
-                        // 현재 도메인 확인
                         const origin = window.location.origin;
+                        const iframe = document.createElement('iframe');
+                        iframe.id = 'player';
+                        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                        iframe.setAttribute('allowfullscreen', '');
+                        
+                        document.getElementById('player').replaceWith(iframe);
 
                         state.player = new YT.Player('player', {
                             height: '100%',
                             width: '100%',
                             videoId: state.currentVideoId,
-                            host: 'https://www.youtube-nocookie.com', // 쿠키 없는 도메인 사용
+                            host: 'https://www.youtube-nocookie.com',
                             playerVars: {
                                 'playsinline': 1,
                                 'rel': 0,
-                                'origin': origin, // 현재 도메인 설정
+                                'origin': origin,
                                 'enablejsapi': 1,
-                                'widget_referrer': origin
+                                'widget_referrer': origin,
+                                'modestbranding': 1,
+                                'privacy_mode': 1
                             },
                             events: {
                                 'onReady': onPlayerReady,
                                 'onError': (event) => {
                                     console.error('Player Error:', event.data);
+                                },
+                                'onStateChange': (event) => {
+                                    // 동영상이 재생 중일 때만 상태 체크
+                                    if (event.data === YT.PlayerState.PLAYING) {
+                                        state.isPlaying = true;
+                                    } else {
+                                        state.isPlaying = false;
+                                    }
                                 }
                             }
                         });
 
-                        // 이벤트 리스너 정리
-                        window.addEventListener('beforeunload', () => {
-                            if (state.player) {
-                                state.player.destroy();
-                                state.player = null;
-                            }
-                        });
+                        // 페이지 나갈 때 정리
+                        window.addEventListener('beforeunload', cleanupPlayer);
 
                         createVideoGrid(videoDatas);
                         updateVideoInfo(videoDatas[0]);
