@@ -57,6 +57,9 @@ collections:
     output: true
     permalink: /:collection/:path/
 
+include:
+  - _others
+
 ordered_collections:
   - posts
   - pages
@@ -78,3 +81,16 @@ github_username:
 
 gitbook:
   theme: night
+
+sidebar:
+  sections:
+    - title: "프로그래밍"
+      items:
+        - title: "Client Programming"
+          url: "/programming/client-programming"
+        - title: "Server Programming"
+          url: "/programming/server-programming"
+    - title: "프로젝트"
+      items:
+        - title: "Katana Zero"
+          url: "/projects/katanazero"

@@ -48,71 +48,73 @@
 
             <li class="divider"></li>
 
-            {% if site.ordered_collections %}
-                {% for label in site.ordered_collections %}
-                    {% assign collection = site.collections | where: "label", label | first %}
-                    <!-- <p>{{ collection.label }}</p> -->
-                    {% if collection.output %}
-                        {% if collection.label == "posts" %}
-                            {% assign reversed_posts = site[collection.label] | reverse %}
-                        {% else %}
-                            {% assign reversed_posts = site[collection.label] %}
-                        {% endif %}
-
-                        {% for post in reversed_posts %}
+            <!-- Programming 섹션 -->
+            {% assign programming_posts = site.posts | where: "category", "Programming" %}
+            {% if programming_posts.size > 0 %}
+                <li class="chapter-title">프로그래밍</li>
+                {% for post in programming_posts %}
+                    {% if page.url == post.url %}
+                    <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
+                    {% else %}
+                    <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{post.url}}">
+                    {% endif %}
+                        <a href="{{site.baseurl}}{{post.url}}" onclick="pageScrollToTop(this)">
+                            {{ post.title | escape }}
+                        </a>
+                        {% if site.toc.enabled %}
                             {% if page.url == post.url %}
-                            <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
-                            {% else %}
-                            <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{post.url}}">
+                                {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
                             {% endif %}
-                                <a href="{{site.baseurl}}{{post.url}}" onclick="pageScrollToTop(this)">
-                                    {{ post.title | escape }}
-                                </a>
-                                {% if site.toc.enabled %}
-                                    {% if page.url == post.url %}
-                                        {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
-                                    {% endif %}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-
-                        {% if reversed_posts.size > 0 %}
-                            <li class="divider"></li>
                         {% endif %}
+                    </li>
+                {% endfor %}
+            {% endif %}
+
+            <li class="divider"></li>
+
+            <!-- Projects 섹션 -->
+            {% assign project_pages = site.pages | where: "category", "Projects" %}
+            {% if project_pages.size > 0 %}
+                <li class="chapter-title">프로젝트</li>
+                {% for project_page in project_pages %}
+                    {% if project_page.path contains '_pages/projects/' %}
+                    {% if page.url == project_page.url %}
+                    <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{project_page.url}}">
+                    {% else %}
+                    <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{project_page.url}}">
+                    {% endif %}
+                        <a href="{{site.baseurl}}{{project_page.url}}" onclick="pageScrollToTop(this)">
+                            {{ project_page.title | escape }}
+                        </a>
+                        {% if site.toc.enabled %}
+                            {% if page.url == project_page.url %}
+                                {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
+                            {% endif %}
+                        {% endif %}
+                    </li>
                     {% endif %}
                 {% endfor %}
-            {% else %}
-                {% for collection in site.collections %}
-                    <!-- <p>{{ collection.label }}</p> -->
-                    {% if collection.output %}
-                        {% if collection.label == "posts" %}
-                            {% assign reversed_posts = site[collection.label] | reverse %}
-                        {% else %}
-                            {% assign reversed_posts = site[collection.label] %}
-                        {% endif %}
+            {% endif %}
 
-                        {% for post in reversed_posts %}
-                            {% if page.url == post.url %}
-                            <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
-                            {% else %}
-                            <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{post.url}}">
-                            {% endif %}
-                                <a href="{{site.baseurl}}{{post.url}}" onclick="pageScrollToTop(this)">
-                                    {{ post.title | escape }}
-                                </a>
-                                {% if site.toc.enabled %}
-                                    {% if page.url == post.url %}
-                                        {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
-                                    {% endif %}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
+            <li class="divider"></li>
 
-                        {% if reversed_posts.size > 0 %}
-                            <li class="divider"></li>
+            <!-- Dev Log 섹션 (단독 항목) -->
+            {% assign devlog = site.others | where: "title", "Dev Log" | first %}
+            {% if devlog %}
+                {% if page.url == devlog.url %}
+                <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{devlog.url}}">
+                {% else %}
+                <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{devlog.url}}">
+                {% endif %}
+                    <a href="{{site.baseurl}}{{devlog.url}}" onclick="pageScrollToTop(this)">
+                        {{ devlog.title | escape }}
+                    </a>
+                    {% if site.toc.enabled %}
+                        {% if page.url == devlog.url %}
+                            {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
                         {% endif %}
                     {% endif %}
-                {% endfor %}
+                </li>
             {% endif %}
         </ul>
     </nav>
