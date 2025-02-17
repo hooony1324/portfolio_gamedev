@@ -56,6 +56,7 @@ function loadVideoPlayer() {
     const state = window.videoPlayerState;
     const videoContent = document.getElementById('video-content');
     const loadingWrapper = document.getElementById('loading-wrapper');
+    const mainVideo = document.querySelector('.main-video');
     
     const baseUrl = '/' + getBaseUrl();
     
@@ -69,6 +70,13 @@ function loadVideoPlayer() {
             state.currentVideoId = videoDatas[0].id;
             
             function createPlayer() {
+                // 플레이어 div 초기화
+                if (!document.getElementById('player')) {
+                    const playerDiv = document.createElement('div');
+                    playerDiv.id = 'player';
+                    mainVideo.appendChild(playerDiv);
+                }
+
                 const checkYouTubeAPI = () => {
                     return new Promise((resolve, reject) => {
                         if (typeof YT !== 'undefined' && YT.loaded) {
@@ -91,20 +99,15 @@ function loadVideoPlayer() {
 
                 checkYouTubeAPI()
                     .then(() => {
+                        // 기존 플레이어 정리
                         if (state.player) {
                             state.player.destroy();
+                            state.player = null;
                         }
 
                         const origin = window.location.origin;
-                        const playerDiv = document.getElementById('player');
-                        
-                        // div가 없는 경우 생성
-                        if (!playerDiv) {
-                            const newPlayerDiv = document.createElement('div');
-                            newPlayerDiv.id = 'player';
-                            document.querySelector('.main-video').appendChild(newPlayerDiv);
-                        }
 
+                        // 새 플레이어 생성
                         state.player = new YT.Player('player', {
                             height: '100%',
                             width: '100%',
@@ -139,12 +142,15 @@ function loadVideoPlayer() {
                         createVideoGrid(videoDatas);
                         updateVideoInfo(videoDatas[0]);
                         
-                        loadingWrapper.style.display = 'none';
-                        videoContent.style.display = 'block';
+                        // UI 표시
+                        if (loadingWrapper) loadingWrapper.style.display = 'none';
+                        if (videoContent) videoContent.style.display = 'block';
                     })
                     .catch(error => {
                         console.error('Player initialization error:', error);
-                        loadingWrapper.innerHTML = 'Error initializing video player';
+                        if (loadingWrapper) {
+                            loadingWrapper.innerHTML = 'Error initializing video player';
+                        }
                     });
             }
 
@@ -152,7 +158,9 @@ function loadVideoPlayer() {
         })
         .catch(error => {
             console.error('Content load error:', error);
-            loadingWrapper.innerHTML = 'Error loading content';
+            if (loadingWrapper) {
+                loadingWrapper.innerHTML = 'Error loading content';
+            }
         });
 }
 
