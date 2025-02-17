@@ -123,6 +123,9 @@ function onPlayerReady(event) {
 function createVideoGrid(videos) {
     console.log('5. Creating video grid with', videos.length, 'videos');
     const grid = document.getElementById('video-grid');
+    const state = window.videoPlayerState;  // state 객체 참조 추가
+    
+    grid.innerHTML = ''; // 기존 그리드 초기화
     
     videos.forEach((video, index) => {
         console.log(`5-1. Adding video ${index + 1}:`, video.title);
@@ -134,12 +137,23 @@ function createVideoGrid(videos) {
         `;
         
         videoItem.addEventListener('click', () => {
-            if (window.videoPlayerState.currentVideoId !== video.id) {
+            if (state.currentVideoId !== video.id) {
                 console.log('5-2. Switching to video:', video.title);
-                window.videoPlayerState.currentVideoId = video.id;
-                window.videoPlayerState.player.loadVideoById(video.id);
-                updateVideoInfo(video);
-                window.scrollTo(0, 0);
+                state.currentVideoId = video.id;
+                if (state.player && typeof state.player.loadVideoById === 'function') {
+                    state.player.loadVideoById(video.id);
+                    updateVideoInfo(video);
+                    window.scrollTo(0, 0);
+                } else {
+                    console.log('5-3. Player not ready, retrying...');
+                    setTimeout(() => {
+                        if (state.player && typeof state.player.loadVideoById === 'function') {
+                            state.player.loadVideoById(video.id);
+                            updateVideoInfo(video);
+                            window.scrollTo(0, 0);
+                        }
+                    }, 1000);
+                }
             }
         });
         
@@ -149,11 +163,46 @@ function createVideoGrid(videos) {
 
 function updateVideoInfo(video) {
     console.log('6. Updating video info for:', video.title);
-    document.getElementById('video-title').textContent = video.title;
-    document.getElementById('video-description').textContent = video.description;
-    
+    const videoTitle = document.getElementById('video-title');
+    const videoDescription = document.getElementById('video-description');
     const docLink = document.getElementById('doc-link');
-    docLink.href = video.docPath;
+    
+    videoTitle.textContent = video.title;
+    videoDescription.textContent = video.description;
+    
+    // 현재 docPath와 실제 경로 로깅
+    const relativePath = video.docPath.replace('/pages/projects/', '');
+    console.log('6-1. Document path check:', {
+        docPath: video.docPath,
+        relativePath: relativePath
+    });
+    
+    // GitBook 라우팅을 위한 상대 경로 사용
+    docLink.href = relativePath;
+    
+    // 링크 클릭 이벤트 처리
+    docLink.onclick = function(e) {
+        e.preventDefault();
+        
+        // 해당 프로젝트의 탭 찾기
+        const sidebarLinks = document.querySelectorAll('.book-summary ul.summary li a');
+        console.log('6-2. Looking for link with path:', relativePath);
+        
+        for (const link of sidebarLinks) {
+            console.log('6-3. Checking link:', {
+                href: link.getAttribute('href'),
+                text: link.textContent.trim()
+            });
+            
+            if (link.getAttribute('href')?.includes(relativePath)) {
+                console.log('6-4. Found matching link, clicking');
+                link.click();
+                return;
+            }
+        }
+        
+        console.log('6-5. No matching link found');
+    };
 }
 
 // 즉시 실행 함수로 초기 상태 설정
