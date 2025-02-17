@@ -180,13 +180,26 @@ function debounce(func, wait) {
 // 비디오 전환 함수 최적화
 function switchVideo(videoId, videoInfo) {
     const state = window.videoPlayerState;
-    if (!state.playerReady || !state.player) {
+    
+    // 플레이어가 없거나 준비되지 않은 경우 재초기화
+    if (!state.player || !state.playerReady) {
+        console.log('Player not ready, reinitializing...');
+        state.currentVideoId = videoId;
+        
+        // 플레이어 재초기화
         if (state.retryCount < 3) {
             state.retryCount++;
-            setTimeout(() => switchVideo(videoId, videoInfo), 500);
+            window.forceInitialize = true;
+            loadVideoPlayer();
+            setTimeout(() => {
+                if (state.player && state.playerReady) {
+                    state.player.loadVideoById(videoId);
+                    updateVideoInfo(videoInfo);
+                }
+            }, 1000);
             return;
         }
-        console.error('Player not ready after retries');
+        console.error('Failed to initialize player after retries');
         return;
     }
     
@@ -198,6 +211,11 @@ function switchVideo(videoId, videoInfo) {
         debounce(() => window.scrollTo(0, 0), 100)();
     } catch (error) {
         console.error('Error switching video:', error);
+        // 에러 발생 시 플레이어 재초기화 시도
+        state.player = null;
+        state.playerReady = false;
+        window.forceInitialize = true;
+        loadVideoPlayer();
     }
 }
 
@@ -258,30 +276,38 @@ function updateVideoInfo(video) {
             e.preventDefault();
             
             const sidebarLinks = document.querySelectorAll('.book-summary ul.summary li a');
+            
+            // 타겟 경로에서 'katanazero'를 'katana zero'로 변경
             const targetPath = video.docPath.toLowerCase()
                                           .replace('{{ site.baseurl }}', '')
                                           .replace('/pages/projects/', '')
                                           .replace(/\.html$/, '')
-                                          .replace(/\/$/, '');
+                                          .replace(/\/$/, '')
+                                          .replace('katanazero', 'katana zero');
             
             console.log('6-2. Looking for link with path:', targetPath);
             
             let found = false;
             for (const link of sidebarLinks) {
-                const linkHref = link.getAttribute('href').toLowerCase()
-                                   .replace('/portfolio_gamedev', '')
-                                   .replace('/pages/projects/', '')
-                                   .replace(/\.html$/, '')
-                                   .replace(/\/$/, '')
-                                   .replace(/%20/g, ' ');  // URL 인코딩된 공백 처리
+                let linkHref = link.getAttribute('href').toLowerCase()
+                                 .replace('/portfolio_gamedev', '')
+                                 .replace('/pages/projects/', '')
+                                 .replace(/\.html$/, '')
+                                 .replace(/\/$/, '')
+                                 .replace(/%20/g, ' ');  // URL 인코딩된 공백 처리
+                
+                // 날짜 부분 제거
+                linkHref = linkHref.replace(/\d{4}-\d{2}-\d{2}-/, '');
+                const cleanTargetPath = targetPath.replace(/\d{4}-\d{2}-\d{2}-/, '');
                 
                 console.log('6-3. Comparing paths:', {
-                    target: targetPath,
+                    target: cleanTargetPath,
                     link: linkHref,
                     text: link.textContent.trim()
                 });
                 
-                if (linkHref.includes(targetPath) || targetPath.includes(linkHref)) {
+                // 정확한 문자열 매칭
+                if (linkHref === cleanTargetPath || link.textContent.trim().toLowerCase() === cleanTargetPath) {
                     console.log('6-4. Found matching link, clicking');
                     link.click();
                     found = true;
@@ -329,26 +355,36 @@ function cleanupPlayer() {
             console.error('Error cleaning up player:', error);
         }
         state.player = null;
-        state.playerReady = false;
-        state.retryCount = 0;
     }
+    state.playerReady = false;
+    state.isInitialized = false;
+    state.retryCount = 0;
+    window.forceInitialize = false;
 }
 
 // GitBook 이벤트 처리
 if (typeof gitbook !== 'undefined') {
     gitbook.events.bind('page.change', function() {
+        console.log('Page changed, cleaning up player');
         cleanupPlayer();
         
         if (window.location.pathname.includes('devlog')) {
+            console.log('Devlog page detected, reinitializing player');
             window.videoPlayerState = {
                 player: null,
                 currentVideoId: null,
                 isVideoLoaded: typeof YT !== 'undefined' && YT.loaded,
                 isGitbookReady: true,
-                isInitialized: false
+                isInitialized: false,
+                playerReady: false,
+                retryCount: 0
             };
             window.forceInitialize = true;
-            initializeVideoIfReady();
+            
+            // 약간의 지연 후 초기화 시도
+            setTimeout(() => {
+                initializeVideoIfReady();
+            }, 500);
         }
     });
 }
