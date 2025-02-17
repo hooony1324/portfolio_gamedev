@@ -75,7 +75,7 @@ function loadVideoPlayer() {
                         } else {
                             const timeoutId = setTimeout(() => {
                                 reject(new Error('YouTube API load timeout'));
-                            }, 10000); // 10초 타임아웃
+                            }, 10000);
 
                             const checkInterval = setInterval(() => {
                                 if (typeof YT !== 'undefined' && YT.loaded) {
@@ -88,7 +88,6 @@ function loadVideoPlayer() {
                     });
                 };
 
-                // YouTube API 로드 및 플레이어 생성
                 checkYouTubeAPI()
                     .then(() => {
                         if (state.player) {
@@ -96,20 +95,34 @@ function loadVideoPlayer() {
                             state.player = null;
                         }
 
+                        // 현재 도메인 확인
+                        const origin = window.location.origin;
+
                         state.player = new YT.Player('player', {
                             height: '100%',
                             width: '100%',
                             videoId: state.currentVideoId,
+                            host: 'https://www.youtube-nocookie.com', // 쿠키 없는 도메인 사용
                             playerVars: {
                                 'playsinline': 1,
                                 'rel': 0,
-                                'cookie': 'CONSENT=YES+' // 쿠키 동의 명시
+                                'origin': origin, // 현재 도메인 설정
+                                'enablejsapi': 1,
+                                'widget_referrer': origin
                             },
                             events: {
                                 'onReady': onPlayerReady,
                                 'onError': (event) => {
                                     console.error('Player Error:', event.data);
                                 }
+                            }
+                        });
+
+                        // 이벤트 리스너 정리
+                        window.addEventListener('beforeunload', () => {
+                            if (state.player) {
+                                state.player.destroy();
+                                state.player = null;
                             }
                         });
 
@@ -248,16 +261,21 @@ function updateVideoInfo(video) {
     }
 })();
 
+// 페이지 변경 시 플레이어 정리
+function cleanupPlayer() {
+    const state = window.videoPlayerState;
+    if (state.player) {
+        state.player.destroy();
+        state.player = null;
+    }
+}
+
 // GitBook 이벤트 처리
 if (typeof gitbook !== 'undefined') {
-    console.log('7. Setting up GitBook event handler');
     gitbook.events.bind('page.change', function() {
-        console.log('7-1. GitBook page change event triggered');
+        cleanupPlayer();
         
-        // 비디오 페이지로 진입할 때마다 상태 초기화
         if (window.location.pathname.includes('devlog')) {
-            console.log('7-2. Resetting video player state for new page');
-            // 상태 초기화
             window.videoPlayerState = {
                 player: null,
                 currentVideoId: null,
