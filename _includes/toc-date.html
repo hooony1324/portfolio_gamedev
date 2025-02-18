@@ -1,3 +1,4 @@
+
 <div class="book-summary">
     <script type="text/javascript">
         // Fixes the page links scroll problem on both desktop and mobile browsers
@@ -54,7 +55,17 @@
             {% for category in categories %}
                 {% if category.name != "" and category.name != nil %}
                     <li class="chapter-title">{{ category.name }}</li>
-                    {% for doc in category.items %}
+                    {% assign category_docs = category.items %}
+                    {% assign sorted_docs = category_docs | sort: "path" %}
+                    
+                    {% comment %} Debug information {% endcomment %}
+                    {% for doc in sorted_docs %}
+                        {% if doc.path contains '_posts/' or doc.path contains '_pages/projects/' %}
+                            <!-- Debug: {{ doc.path }} - {{ doc.title }} -->
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% for doc in sorted_docs %}
                         {% if doc.title != nil and doc.path contains '_posts/' or doc.path contains '_pages/projects/' %}
                             {% if page.url == doc.url %}
                             <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{doc.url}}">
