@@ -49,34 +49,25 @@
 
             <li class="divider"></li>
 
-            {% assign all_docs = site.posts | concat: site.pages %}
-            {% assign categories = all_docs | group_by: "category" | sort: "name" %}
+            <!-- Posts 섹션 -->
+            {% assign posts = site.posts | sort: "path" %}
+            {% assign post_categories = posts | group_by: "category" | sort: "name" %}
             
-            {% for category in categories %}
+            {% for category in post_categories %}
                 {% if category.name != "" and category.name != nil %}
                     <li class="chapter-title">{{ category.name }}</li>
-                    {% assign category_docs = category.items %}
-                    {% assign sorted_docs = category_docs | sort: "path" %}
-                    
-                    {% comment %} Debug information {% endcomment %}
-                    {% for doc in sorted_docs %}
-                        {% if doc.path contains '_posts/' or doc.path contains '_pages/projects/' %}
-                            <!-- Debug: {{ doc.path }} - {{ doc.title }} -->
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% for doc in sorted_docs %}
-                        {% if doc.title != nil and doc.path contains '_posts/' or doc.path contains '_pages/projects/' %}
-                            {% if page.url == doc.url %}
-                            <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{doc.url}}">
+                    {% for post in category.items %}
+                        {% if post.title != nil %}
+                            {% if page.url == post.url %}
+                            <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
                             {% else %}
-                            <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{doc.url}}">
+                            <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{post.url}}">
                             {% endif %}
-                                <a href="{{site.baseurl}}{{doc.url}}" onclick="pageScrollToTop(this)">
-                                    {{ doc.title | escape }}
+                                <a href="{{site.baseurl}}{{post.url}}" onclick="pageScrollToTop(this)">
+                                    {{ post.title | escape }}
                                 </a>
                                 {% if site.toc.enabled %}
-                                    {% if page.url == doc.url %}
+                                    {% if page.url == post.url %}
                                         {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
                                     {% endif %}
                                 {% endif %}
@@ -91,7 +82,7 @@
             {% endfor %}
 
             <!-- Dev Log 섹션 (단독 항목) -->
-            {% assign devlog = site.others | where: "title", "Dev Log" | first %}
+            {% assign devlog = site.others | first %}
             {% if devlog %}
                 <li class="divider"></li>
                 {% if page.url == devlog.url %}
@@ -108,6 +99,31 @@
                         {% endif %}
                     {% endif %}
                 </li>
+            {% endif %}
+
+            <!-- Projects 섹션 -->
+            {% assign projects = site.pages | where_exp: "item", "item.path contains '_pages/projects/'" | sort: "path" %}
+            {% if projects.size > 0 %}
+                <li class="divider"></li>
+                <li class="chapter-title">Projects</li>
+                {% for project in projects %}
+                    {% if project.title != nil %}
+                        {% if page.url == project.url %}
+                        <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{project.url}}">
+                        {% else %}
+                        <li class="chapter" data-level="1.1" data-path="{{site.baseurl}}{{project.url}}">
+                        {% endif %}
+                            <a href="{{site.baseurl}}{{project.url}}" onclick="pageScrollToTop(this)">
+                                {{ project.title | escape }}
+                            </a>
+                            {% if site.toc.enabled %}
+                                {% if page.url == project.url %}
+                                    {% include toc.html html=content h_min=site.toc.h_min h_max=site.toc.h_max %}
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </ul>
     </nav>

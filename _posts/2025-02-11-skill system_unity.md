@@ -1,60 +1,118 @@
 ---
-title: Skill System
+title: 스킬 시스템
 author: Seonghoon Kim
 layout: post
 category: Unity Portfolio
+mermaid: true
 ---
 
 # Overview
+[![GitHub](https://img.shields.io/badge/GitHub-Project_H-blue?style=for-the-badge&logo=github)](https://github1s.com/hooony1324/Project_h/blob/HEAD/project_h/Assets/_Project/Scripts/IdentifiedObject/AbilitySystem/Skill/SkillSystem.cs)
 ![Skill System Overview]({{site.baseurl}}/assets/gifs/skillsystem_unity.gif)  
 
-Category, Stat, Skill, Effect로 구성된 모듈식 스킬 시스템입니다. ScriptableObject를 활용하여 데이터를 관리하고, Editor 확장을 통해 직관적인 스킬 편집이 가능합니다.
+복잡한 스킬들을 효과적으로 구현하기 위해 스킬 시스템을 공부하여 적용하였습니다.
+모바일 게임에서의 필요한 부분은 따로 기능을 추가하며 그동안 추상적 이었던 스킬 작동 개념을 확인하고 확장이 용이한 시스템 설계에 대해 공부할 수 있었습니다.
+
+# 시스템 개요
+
+```mermaid
+graph TD
+    A[SkillSystem] --> B[Skill]
+    B --> C[SkillData]
+    C --> D[TargetSearcher]
+    C --> E[EffectSelector]
+    C --> F[SkillAction]
+```
+##### SkillSystem
+- Entity가 보유한 스킬 관리
+- 스킬 등록/해제 및 상태 변화 이펙트 처리
+
+##### Skill
+- 스킬 타입에 따른 적절한 StateMachine설정(Instant, Passive, Toggle)  
+- 실제 스킬의 사용 및 상태 관리를 담당
+
+##### SkillData
+- 스킬의 모든 설정 담당
+
+##### TargetSearcher
+- 스킬의 타겟팅 시스템 담당, 타겟 검색 및 선택
+
+##### EffectSelector
+- 스킬이 사용할 효과들을 선택, 상대방에게 스킬이 적용될 때 Effect적용
+
+##### SkillAction
+- 스킬이 실행되는 로직을 담당
+- 투사체 발사 Action, 돌진 Action, 즉시 적용 Action 등  
 
 
-##### Source Project : Project H - SkillSystem.cs
-[![GitHub](https://img.shields.io/badge/GitHub-Project_H-blue?style=for-the-badge&logo=github)](https://github1s.com/hooony1324/Project_h/blob/HEAD/project_h/Assets/_Project/Scripts/IdentifiedObject/AbilitySystem/Skill/SkillSystem.cs)
+#### 스킬 사용 흐름
+```mermaid
+sequenceDiagram
+    participant User as Entity
+    participant SS as SkillSystem
+    participant S as Skill
+    participant TS as TargetSearcher
+    participant SA as SkillAction
+    participant E as Effect
+
+    User->>+SS: 스킬 사용
+    SS->>+S: 활성화
+    S->>+TS: 타겟 검색
+    TS-->>-S: 타겟 반환
+    S->>+SA: 액션 실행
+    SA->>+E: 효과 적용
+```
+스킬 버튼에 사용할 스킬ID를 등록하고 버튼을 누를 때마다 Use를 시도합니다. Skill System은 Cooltime과 같이 사용 가능한지의 여부를 체크하여 스킬을 사용합니다.
+
+스킬이 사용되면 아래와 같은 흐름이 생기게 됩니다
+- searcher
+- 
+
+
+#### State Machine
+
+#### 애니메이션 연동
 
 
 ---
 
-# Skill Setting
+
+
+# 스킬 편집
+## Skill Setting
 ![Skill Setting]({{site.baseurl}}/assets/images/skillsetting.png)
+단발성 즉시 적용 스킬, 지속성 스킬, 주기적 효과 적용 스킬 등 다양한 스킬을 설정할 수 있습니다.  
 
-<details markdown="1" class="toggle-container">
-<summary class="toggle-header">스킬 시스템 설정 상세</summary>
 
-**기본 타입 설정**  
-- Type
-  - Active : 플레이어가 직접 사용하는 스킬
-  - Passive : 자동으로 발동되는 스킬
+##### runningFinishOption
+- 스킬 종료 조건을 결정
+-FinishWhenApplyCompleted: applyCount만큼 적용 완료되면 종료
+-FinishWhenDurationEnded: 지속시간이 끝나면 종료  
 
-- UseType
-  - Instant : 즉시 발동되는 스킬
-  - Toggle : 지속적으로 켜고 끌 수 있는 스킬
+##### duration
+- 스킬의 지속 시간
+- 0으로 설정하고 FinishWhenDurationEnded 옵션이면 무한 지속
+- 예: 버프 스킬의 지속 시간  
 
-**실행 관련 설정**
-- ExecutionType
-  - Auto : 스킬의 지속시간, 주기 계산하여 자동 발동
-  - Input : 키 입력 시 수동 발동
+##### applyCount
+- 스킬 효과 적용 횟수
+- 0으로 설정하면 무한 적용
+- 예: 리븐 Q스킬의 3회 사용  
 
-- ApplyType
-  - Instant : 즉시 효과 적용
-  - Animation : 애니메이션의 특정 시점에 효과 적용
+##### applyCycle
+- 스킬 효과의 주기적 적용 간격
+- 첫 적용은 즉시, 이후 설정된 주기마다 적용
+- 예: 1초로 설정 시 즉시 한번 적용 후 1초마다 재적용  
 
-**타겟팅 시스템 설정**  
-- NeedSelectionResultType  
-  - Target : 특정 타겟 선택 (적, 아군, 오브젝트)
-  - Position : 위치나 방향 선택 (범위형 스킬)
-- TargetSearchTimingOption  
-  - TargetSelectionCompleted : 선택 즉시 타겟 확정 (고정 타겟)
-  - Apply : 스킬 적용마다 타겟 재탐색 (동적 타겟)
-</details>
+##### cooldown
+- 스킬 재사용 대기시간
+- StatScaleFloat 타입으로 스탯에 따라 쿨타임 조절 가능  
 
-# Skill Data
-#### Preceding Action & Action
+## Skill Data
+### Preceding Action & Action
 ![SkillData Preceding Action & Action]({{site.baseurl}}/assets/images/skilldata_precedingaction.png)  
 
-스킬은 Cast > Charge > Preceding Action > Action 순으로 진행됩니다. Preceding Action으로 사전 행동을, Action으로 실제 스킬 효과를 정의합니다.
+Preceding Action으로 사전 행동을, Action으로 실제 스킬 효과를 정의합니다.
 
 <details markdown="1" class="toggle-container">
 <summary class="toggle-header">Action 종류</summary>
@@ -72,11 +130,11 @@ Category, Stat, Skill, Effect로 구성된 모듈식 스킬 시스템입니다. 
 효과를 즉시 적용하는 기본 Action입니다.
 </details>
 
-#### Setting 
+### Setting 
 ![SkillData Setting]({{site.baseurl}}/assets/images/skilldata_setting.png)  
 스킬의 지속시간, 적용 횟수, 쿨타임을 설정합니다. 쿨타임은 스탯 시스템과 연동되어 감소 효과를 적용할 수 있습니다.
 
-#### Target Searcher  
+### Target Searcher  
 ![SkillData Target Searcher]({{site.baseurl}}/assets/images/skilldata_targetsearcher.png)
 
 **Selection Action**  
@@ -97,36 +155,40 @@ Select된 결과로 Search를 시작하는데 **Search Box Area**는 설정한 �
 
 </details>
 
-#### Cost & Cast & Charge
+### Cost & Cast & Charge
 ![SkillData Cost]({{site.baseurl}}/assets/images/skilldata_cost.png)  
-스킬 사용에 필요한 자원을 설정합니다.
+스킬 사용에 필요한 자원을 설정합니다.  
+<br>
 
 ![SkillData Cast]({{site.baseurl}}/assets/images/skilldata_cast.png)  
-스킬 시전 시간을 설정합니다.
+스킬 시전 시간을 설정합니다.  
+<br>
 
 ![SkillData Charge]({{site.baseurl}}/assets/images/skilldata_charge.png)  
-차징 관련 설정을 합니다. 총 차징 시간, 차지가 끝나는 시간, 최소 차징 시간, 차징 시작 시간 을 조정할 수 있습니다.
+차징 관련 설정을 합니다. 총 차징 시간, 차지가 끝나는 시간, 최소 차징 시간, 차징 시작 시간 을 조정할 수 있습니다.  
 
-# Stat
+## Stat
 ![Stat 1]({{site.baseurl}}/assets/images/stat_1.png) 
-체력, 쿨타임, 이동속도 등의 기본 수치를 정의합니다. 백분율/감소 여부를 설정하여 계산 방식을 결정합니다.
+체력, 쿨타임, 이동속도 등의 기본 수치를 정의합니다. 백분율/감소 여부를 설정하여 계산 방식을 결정합니다.  
+<br>
 
 ![Stat 2]({{site.baseurl}}/assets/images/stat_2.png)  
 스탯 시스템을 통해 스킬의 쿨타임 감소와 같은 수치 보정이 가능합니다.
 
-# Effect
-#### Effect Setting
+## Effect
+### Setting
 ![Effect Setting]({{site.baseurl}}/assets/images/effect_setting.png)  
 Category를 통해 효과를 분류하고, 중복 적용 규칙을 설정합니다.
 
-#### Stack & Counter Effect
+### Stack & Counter Effect
 ![Effect Stack]({{site.baseurl}}/assets/images/effect_stack.png)  
-스택 시스템을 통해 누적 효과를 구현할 수 있습니다.
+스택 시스템을 통해 누적 효과를 구현할 수 있습니다.  
+<br>
 
 ![Effect Counter Effect]({{site.baseurl}}/assets/images/effect_countereffect.png)  
 특정 효과에 대한 면역 기능을 구현합니다. (예: 슈퍼아머의 넉백 면역)
 
-#### Action
+### Action
 ![Effect Action]({{site.baseurl}}/assets/images/effect_action.png)  
 데미지, CC기, 스탯 증가 등 다양한 효과를 조합할 수 있습니다.
 
@@ -146,6 +208,6 @@ Category를 통해 효과를 분류하고, 중복 적용 규칙을 설정합니�
 지정한 스탯의 수치를 증가시킵니다.
 </details>
 
-#### Setting & Custom Action
+### Setting & Custom Action
 ![Effect Setting & Custom Action]({{site.baseurl}}/assets/images/effect_setting_customaction.png)  
 효과의 지속시간, 적용 횟수를 설정하고, 화면 떨림과 같은 부가 효과를 추가할 수 있습니다.

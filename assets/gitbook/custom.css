@@ -241,27 +241,6 @@
     margin-bottom: 0px;
 }
 
-pre:has(code.language-mermaid[data-processed="true"]) {
-    background-color: #ffffff;
-    text-align: center;
-}
-
-:root {
-    --c-tip: #42b983;
-    --c-tip-bg: #e2f5ec;
-    --c-tip-text: #215d42;
-    --c-tip-title: #359469;
-    --c-warning: #e7c000;
-    --c-warning-bg: rgba(255, 229, 100, .25);
-    --c-warning-text: #6b5900;
-    --c-warning-title: #b29400;
-    --c-danger: #c00;
-    --c-danger-bg: #ffe0e0;
-    --c-danger-text: #600;
-    --c-danger-title: #c00;
-    --font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-}
-
 /* 카테고리 섹션 스타일링 */
 .book-summary ul.summary > li.chapter-title {
     padding: 10px 15px;
@@ -412,4 +391,9 @@ pre:has(code.language-mermaid[data-processed="true"]) {
 /* 다크 테마 */
 .book.color-theme-2 .toggle-container {
     background-color: rgba(255,255,255,0.05);
+}
+
+pre:has(code.language-mermaid[data-processed="true"]) {
+    background-color: #ffffff;
+    text-align: center;
 }

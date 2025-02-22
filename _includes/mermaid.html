@@ -1,11 +1,123 @@
 <script>
     function render_mermaid() {
+        let theme = "default";
+        let themeVars = {};
+
+        if (document.querySelector(".book").classList.contains("color-theme-1")) {
+            // 세피아 테마
+            theme = "neutral";
+            themeVars = {
+                background: "#fdf6e3",
+                primaryColor: "#b58900",
+                primaryTextColor: "#586e75",
+                lineColor: "#93a1a1",
+                secondaryColor: "#cb4b16",
+                tertiaryColor: "#859900",
+                nodeBorder: "#93a1a1",
+                nodeBackground: "#eee8d5",
+                mainBkg: "#eee8d5",            // 노드 배경
+                clusterBkg: "#fdf6e3",         // 클러스터 배경
+                clusterBorder: "#93a1a1",      // 클러스터 테두리
+                titleColor: "#586e75",          // 제목 색상
+                // 시퀀스 다이어그램 전용
+                actorBorder: "#93a1a1",
+                actorLineColor: "#93a1a1",
+                signalColor: "#93a1a1",
+                signalTextColor: "#ffffff",        // 시그널 텍스트 색상을 흰색으로 변경
+                activationBorderColor: "#42b983",    // 활성화 박스 테두리
+                activationBkgColor: "#f7f7f7",       // 활성화 박스 배경
+                sequenceNumberColor: "#333333",      // 시퀀스 번호 색상
+                boxTextColor: "#333333",            // 박스 텍스트 색상
+                noteTextColor: "#333333",           // 노트 텍스트 색상
+                noteBkgColor: "#fff5ad",           // 노트 배경 색상
+                noteBorderColor: "#333333"          // 노트 테두리 색상
+            };
+        } else if (document.querySelector(".book").classList.contains("color-theme-2")) {
+            // 다크 테마
+            theme = "dark";
+            themeVars = {
+                background: "#2d3143",
+                primaryColor: "#42b983",
+                primaryTextColor: "#ffffff",        // 텍스트 색상을 흰색으로 변경
+                lineColor: "#e3e3e3",
+                secondaryColor: "#3eb1d0",
+                tertiaryColor: "#e47d7d",
+                nodeBorder: "#42b983",
+                nodeBackground: "#1c1f2b",
+                mainBkg: "#1c1f2b",
+                clusterBkg: "#2d3143",
+                clusterBorder: "#42b983",
+                titleColor: "#ffffff",              // 제목 색상을 흰색으로 변경
+                edgeLabelBackground: "#2d3143",
+                labelBackgroundColor: "#2d3143",
+                // 시퀀스 다이어그램 전용
+                actorBorder: "#e3e3e3",
+                actorBkgColor: "#2d3143",          
+                actorTextColor: "#ffffff",         
+                actorLineColor: "#e3e3e3",
+                signalColor: "#ffffff",           // 시그널 라인 색상을 흰색으로 변경
+                signalTextColor: "#ffffff",       // 시그널 텍스트 색상을 흰색으로 변경
+                loopTextColor: "#ffffff",          
+                activationBorderColor: "#42b983",
+                activationBkgColor: "#2d3143",     
+                sequenceNumberColor: "#ffffff",     
+                boxTextColor: "#ffffff",           
+                messageTextColor: "#ffffff",       
+                noteTextColor: "#333333",
+                noteBkgColor: "#fff5ad",
+                noteBorderColor: "#333333",
+                // 클래스 다이어그램 전용
+                classText: "#ffffff",              // 클래스 텍스트 색상을 흰색으로 변경
+                relationColor: "#ffffff",          // 관계선 색상을 흰색으로 변경
+                arrowheadColor: "#ffffff"          // 화살표 색상을 흰색으로 변경
+            };
+        } else {
+            // 기본 밝은 테마
+            theme = "default";
+            themeVars = {
+                background: "#ffffff",
+                primaryColor: "#4183c4",
+                primaryTextColor: "#333333",
+                lineColor: "#4183c4",
+                secondaryColor: "#42b983",
+                tertiaryColor: "#f66",
+                nodeBorder: "#4183c4",
+                nodeBackground: "#ffffff",
+                mainBkg: "#ffffff",           // 노드 배경
+                clusterBkg: "#f7f7f7",        // 클러스터 배경
+                clusterBorder: "#4183c4",     // 클러스터 테두리
+                titleColor: "#333333",         // 제목 색상
+                // 시퀀스 다이어그램 전용
+                actorBorder: "#4183c4",
+                actorLineColor: "#4183c4",
+                signalColor: "#4183c4",
+                signalTextColor: "#586e75",
+                activationBorderColor: "#42b983",    // 활성화 박스 테두리
+                activationBkgColor: "#f7f7f7",       // 활성화 박스 배경
+                sequenceNumberColor: "#333333",      // 시퀀스 번호 색상
+                boxTextColor: "#333333",            // 박스 텍스트 색상
+                noteTextColor: "#333333",           // 노트 텍스트 색상
+                noteBkgColor: "#fff5ad",           // 노트 배경 색상
+                noteBorderColor: "#333333"          // 노트 테두리 색상
+            };
+        }
+
+        // mermaid 초기화 시 테마 설정 적용
         mermaid.initialize({
             startOnLoad: false,
-            theme: "default",
+            theme: theme,
+            themeVariables: themeVars
         });
+
+        document.querySelectorAll('.mermaid').forEach(element => {
+            element.innerHTML = element.getAttribute('data-source') || element.innerHTML;
+        });
+
         window.mermaid.init(undefined, document.querySelectorAll('.language-mermaid'));
     }
+
+    // 테마 변경 이벤트 리스너 추가
+    document.addEventListener('theme-change', render_mermaid);
 
     function initialize_mermaid() {
         if (document.readyState === "loading") {

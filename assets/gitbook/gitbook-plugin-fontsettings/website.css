@@ -81,6 +81,7 @@
 }
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal {
   color: #704214;
+  background: transparent;
 }
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal a {
   color: inherit;
@@ -108,12 +109,12 @@
 }
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal pre,
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal code {
-  background: #fdf6e3;
   color: #657b83;
-  border-color: #f8df9c;
+  background: transparent;
+  border: none;
 }
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal .highlight {
-  background-color: inherit;
+  background-color: transparent;
 }
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal table th,
 .book.color-theme-1 .book-body .page-wrapper .page-inner section.normal table td {
@@ -129,6 +130,7 @@
 }
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal {
   color: #bdcadb;
+  background: transparent;
 }
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal a {
   color: #3eb1d0;
@@ -156,12 +158,12 @@
 }
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal pre,
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal code {
-  color: #9dbed8;
-  background: #2d3143;
-  border-color: #2d3143;
+  color: #e3e3e3;
+  background: transparent;
+  border: none;
 }
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal .highlight {
-  background-color: #282a39;
+  background-color: transparent;
 }
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal table th,
 .book.color-theme-2 .book-body .page-wrapper .page-inner section.normal table td {
@@ -288,4 +290,29 @@
   color: #f4f4f5;
   background: #252737;
   font-weight: 600;
+}
+
+/* 코드 블록 내 특정 요소들의 가시성 향상 */
+.book.color-theme-2 .highlight .nx,
+.book.color-theme-2 .highlight .na { 
+  color: #42b983;
+}
+
+.book.color-theme-2 .highlight .s,
+.book.color-theme-2 .highlight .s1,
+.book.color-theme-2 .highlight .s2 {
+  color: #e47d7d;
+}
+
+.book.color-theme-2 .highlight .k,
+.book.color-theme-2 .highlight .kd {
+  color: #3eb1d0;
+  font-weight: bold;
+}
+
+/* 코드 블록 여백 및 둥근 모서리 추가 */
+.book.color-theme-2 pre {
+  padding: 1em;
+  border-radius: 4px;
+  margin: 1em 0;
 }
