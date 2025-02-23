@@ -18,31 +18,14 @@ mermaid: true
 ```mermaid
 graph TD
     A[SkillSystem] --> B[Skill]
-    B --> C[SkillData]
-    C --> D[TargetSearcher]
-    C --> E[EffectSelector]
-    C --> F[SkillAction]
+    A --> C[Stat]
+    A --> D[Effect]
+    B --> E[Skill Setting]
+    B --> F[SkillData]
 ```
-##### SkillSystem
-- Entity가 보유한 스킬 관리
-- 스킬 등록/해제 및 상태 변화 이펙트 처리
+스킬 시스템은 크게 6개의 핵심 컴포넌트로 구성되어 있습니다. SkillSystem이 전체적인 스킬 관리와 등록/해제를 담당하고, Skill 컴포넌트가 개별 스킬의 상태와 타입(Instant/Passive/Toggle)과 같은 설정을 관리합니다.  
 
-##### Skill
-- 스킬 타입에 따른 적절한 StateMachine설정(Instant, Passive, Toggle)  
-- 실제 스킬의 사용 및 상태 관리를 담당
-
-##### SkillData
-- 스킬의 모든 설정 담당
-
-##### TargetSearcher
-- 스킬의 타겟팅 시스템 담당, 타겟 검색 및 선택
-
-##### EffectSelector
-- 스킬이 사용할 효과들을 선택, 상대방에게 스킬이 적용될 때 Effect적용
-
-##### SkillAction
-- 스킬이 실행되는 로직을 담당
-- 투사체 발사 Action, 돌진 Action, 즉시 적용 Action 등  
+각 스킬의 레벨 별 설정은 SkillData에서 관리되며, TargetSearcher가 스킬의 대상을 찾고 선택하는 역할을 합니다. EffectSelector는 스킬 효과를 선택하고 적용하며, 마지막으로 SkillAction이 투사체 발사나 돌진 등 실제 스킬의 실행 로직을 처리합니다.
 
 
 #### 스킬 사용 흐름
@@ -62,57 +45,20 @@ sequenceDiagram
     S->>+SA: 액션 실행
     SA->>+E: 효과 적용
 ```
-스킬 버튼에 사용할 스킬ID를 등록하고 버튼을 누를 때마다 Use를 시도합니다. Skill System은 Cooltime과 같이 사용 가능한지의 여부를 체크하여 스킬을 사용합니다.
-
-스킬이 사용되면 아래와 같은 흐름이 생기게 됩니다
-- searcher
-- 
-
-
-#### State Machine
-
-#### 애니메이션 연동
-
 
 ---
 
-
-
-# 스킬 편집
+# Skill
 ## Skill Setting
 ![Skill Setting]({{site.baseurl}}/assets/images/skillsetting.png)
 단발성 즉시 적용 스킬, 지속성 스킬, 주기적 효과 적용 스킬 등 다양한 스킬을 설정할 수 있습니다.  
 
 
-##### runningFinishOption
-- 스킬 종료 조건을 결정
--FinishWhenApplyCompleted: applyCount만큼 적용 완료되면 종료
--FinishWhenDurationEnded: 지속시간이 끝나면 종료  
 
-##### duration
-- 스킬의 지속 시간
-- 0으로 설정하고 FinishWhenDurationEnded 옵션이면 무한 지속
-- 예: 버프 스킬의 지속 시간  
-
-##### applyCount
-- 스킬 효과 적용 횟수
-- 0으로 설정하면 무한 적용
-- 예: 리븐 Q스킬의 3회 사용  
-
-##### applyCycle
-- 스킬 효과의 주기적 적용 간격
-- 첫 적용은 즉시, 이후 설정된 주기마다 적용
-- 예: 1초로 설정 시 즉시 한번 적용 후 1초마다 재적용  
-
-##### cooldown
-- 스킬 재사용 대기시간
-- StatScaleFloat 타입으로 스탯에 따라 쿨타임 조절 가능  
-
-## Skill Data
-### Preceding Action & Action
+## Preceding Action & Action
 ![SkillData Preceding Action & Action]({{site.baseurl}}/assets/images/skilldata_precedingaction.png)  
 
-Preceding Action으로 사전 행동을, Action으로 실제 스킬 효과를 정의합니다.
+Preceding Action으로 사전 행동을, Action으로 실제 스킬의 동작을 선택합니다.
 
 <details markdown="1" class="toggle-container">
 <summary class="toggle-header">Action 종류</summary>
@@ -130,11 +76,15 @@ Preceding Action으로 사전 행동을, Action으로 실제 스킬 효과를 �
 효과를 즉시 적용하는 기본 Action입니다.
 </details>
 
-### Setting 
+## Setting 
 ![SkillData Setting]({{site.baseurl}}/assets/images/skilldata_setting.png)  
 스킬의 지속시간, 적용 횟수, 쿨타임을 설정합니다. 쿨타임은 스탯 시스템과 연동되어 감소 효과를 적용할 수 있습니다.
 
-### Target Searcher  
+## Effect Selector
+![SkillData Effect Selector]({{site.baseurl}}/assets/images/skilldata_effectselector.png)  
+스킬이 사용할 효과들을 선택합니다. Setting의 설정의 결과로 Apply될 때마다 Effect들이 적용됩니다.
+
+## Target Searcher  
 ![SkillData Target Searcher]({{site.baseurl}}/assets/images/skilldata_targetsearcher.png)
 
 **Selection Action**  
@@ -155,7 +105,7 @@ Select된 결과로 Search를 시작하는데 **Search Box Area**는 설정한 �
 
 </details>
 
-### Cost & Cast & Charge
+## Cost & Cast & Charge
 ![SkillData Cost]({{site.baseurl}}/assets/images/skilldata_cost.png)  
 스킬 사용에 필요한 자원을 설정합니다.  
 <br>
@@ -167,7 +117,21 @@ Select된 결과로 Search를 시작하는데 **Search Box Area**는 설정한 �
 ![SkillData Charge]({{site.baseurl}}/assets/images/skilldata_charge.png)  
 차징 관련 설정을 합니다. 총 차징 시간, 차지가 끝나는 시간, 최소 차징 시간, 차징 시작 시간 을 조정할 수 있습니다.  
 
-## Stat
+## Animation & Custom Action
+![SkillData Animation]({{site.baseurl}}/assets/images/skilldata_animation.png)  
+스킬 사용 시 재생할 애니메이션을 트리거 할 Hash값을 설정할 수 있습니다.
+스킬의 Apply가 발생할 때 Custom Action을 설정하여 카메라 진동과 같은 효과를 부여할 수 있습니다.
+
+<details markdown="1" class="toggle-container">
+<summary class="toggle-header">Animator</summary>
+![SkillData Animator]({{site.baseurl}}/assets/images/skilldata_animator.png)
+
+![SkillData Default Attack]({{site.baseurl}}/assets/images/skilldata_animator_isdefaultattack.png)
+스킬에서 설정한 Hash값은 스킬이 발동될 때 적용되며 캐릭터는 애니메이션을 재생하게 됩니다.
+
+</details>
+
+# Stat
 ![Stat 1]({{site.baseurl}}/assets/images/stat_1.png) 
 체력, 쿨타임, 이동속도 등의 기본 수치를 정의합니다. 백분율/감소 여부를 설정하여 계산 방식을 결정합니다.  
 <br>
@@ -175,12 +139,12 @@ Select된 결과로 Search를 시작하는데 **Search Box Area**는 설정한 �
 ![Stat 2]({{site.baseurl}}/assets/images/stat_2.png)  
 스탯 시스템을 통해 스킬의 쿨타임 감소와 같은 수치 보정이 가능합니다.
 
-## Effect
-### Setting
+# Effect
+## Setting
 ![Effect Setting]({{site.baseurl}}/assets/images/effect_setting.png)  
 Category를 통해 효과를 분류하고, 중복 적용 규칙을 설정합니다.
 
-### Stack & Counter Effect
+## Stack & Counter Effect
 ![Effect Stack]({{site.baseurl}}/assets/images/effect_stack.png)  
 스택 시스템을 통해 누적 효과를 구현할 수 있습니다.  
 <br>
@@ -188,7 +152,7 @@ Category를 통해 효과를 분류하고, 중복 적용 규칙을 설정합니�
 ![Effect Counter Effect]({{site.baseurl}}/assets/images/effect_countereffect.png)  
 특정 효과에 대한 면역 기능을 구현합니다. (예: 슈퍼아머의 넉백 면역)
 
-### Action
+## Action
 ![Effect Action]({{site.baseurl}}/assets/images/effect_action.png)  
 데미지, CC기, 스탯 증가 등 다양한 효과를 조합할 수 있습니다.
 
@@ -208,6 +172,6 @@ Category를 통해 효과를 분류하고, 중복 적용 규칙을 설정합니�
 지정한 스탯의 수치를 증가시킵니다.
 </details>
 
-### Setting & Custom Action
+## Setting & Custom Action
 ![Effect Setting & Custom Action]({{site.baseurl}}/assets/images/effect_setting_customaction.png)  
 효과의 지속시간, 적용 횟수를 설정하고, 화면 떨림과 같은 부가 효과를 추가할 수 있습니다.
