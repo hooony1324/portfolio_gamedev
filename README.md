@@ -11,7 +11,10 @@ permalink: /
 📧 hooony1324@gmail.com
 
 **GitHub**  
-🔗 [hooony1324](https://github.com/hooony1324)
+🔗 [hooony1324](https://github.com/hooony1324){:target="_blank" rel="noopener"}
+
+**Youtube DevLog**  
+🎥 [hooony1324](https://www.youtube.com/@cogason1616){:target="_blank" rel="noopener"}
 
 ---
 
