@@ -4,12 +4,9 @@ title: About Me
 permalink: /
 ---
 
-# 김성훈 | Game Client Programmer
+# 김성훈 | Game Programmer
 
 ## 👋 Contact
-**Phone**  
-📞+82 010-3251-6989
-
 **Email**  
 📧 hooony1324@gmail.com
 
@@ -32,4 +29,6 @@ Git | Visual Studio
 
 ### 💡 Interests
 - Game Client Programming
+- Game Server Programming
+- 전투 시스템 개발
 

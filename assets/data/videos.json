@@ -1,25 +1,35 @@
 [
     {
+        "id": "97sLB5jE3NA",
+        "title": "[Team Project] Skill, Map, Item, AI",
+        "description": "기획자와 협업하여 만들어가고 있는 게임입니다.",
+        "docPath": "/pages/projects/2025-02-16-project h"
+    },
+    {
         "id": "bF8dJTWS-kE",
-        "title": "FSM, Shader Programming",
-        "description": "첫 번째 비디오에 대한 설명입니다.",
+        "title": "Shader Programming",
+        "description": "게임 렌더링 과정을 공부하고 ShaderProgramming을 경험하였습니다.",
         "docPath": "/pages/projects/2025-02-17-katanazero"
     },
     {
-        "id": "goNJwY7MeV8",
-        "title": "RPC, Rep Notify",
-        "description": "두 번째 비디오에 대한 설명입니다."
+        "id": "dxX4zYDZWt0",
+        "title": "[Team Project] Multiplay",
+        "description": "카메라 암, 액터 피킹, 캐릭터 스킨, 매치 메이킹, 멀티 플레이 동기화를 작업하였습니다.",
+        "docPath": "/pages/projects/2025-02-19-fall guys"
     },
     {
         "id": "BnkNg8czsp8",
         "title": "Item, QuestSystem",
-        "description": "세 번째 비디오에 대한 설명입니다.",
-        "docPath": "/pages/projects/2025-02-17-katanazero"
+        "description": "Inventory, Quest 시스템을 만들었습니다."
     },
     {
         "id": "jfsCp91ocgU",
         "title": "Object Pooling, Resource Parsing",
-        "description": "네 번째 비디오에 대한 설명입니다.",
-        "docPath": "/pages/projects/2025-02-17-katanazero"
+        "description": "Object Pooling패턴 적용과, OpenCV를 이용하여 필요한 리소스를 파싱하였습니다."
+    },
+    {
+        "id": "goNJwY7MeV8",
+        "title": "RPC, Rep Notify",
+        "description": "Unreal엔진을 활용하여 숨바꼭질 게임을 만들었습니다."
     }
 ] 

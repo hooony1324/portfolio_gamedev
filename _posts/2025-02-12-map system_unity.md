@@ -12,8 +12,6 @@ mermaid: true
 
 플레이어가 던전에 입장할 때마다 모습이 다른 부분을 표현하고 싶었습니다. 기획자가 각 방의 특징을 설정할 수 있고 방의 모양을 커스터마이징 할 수 있도록 설계하였습니다.
 
----
-
 
 # 시스템 개요
 
@@ -25,6 +23,13 @@ graph TD
     D[방 레벨 디자인] --> D1[몬스터 웨이브 설정]
     D --> D2[방 타입 및 이벤트 설정]
 ```
+기획자가 DungeonRoom을 디자인하여 Dungeon Prefab 안에 배치하면 던전은 인게임에서 방들을 랜덤으로 배치하고 NavMesh를 생성한 후 각 방을 연결하는 문을 생성합니다.  
+
+각 방의 시작과 클리어 같은 이벤트 지점을 만들어서 [몬스터 웨이브 시작]과 같은 이벤트를 바인딩 할 수 있도록 설계하였고 Tilemap을 이용하여 몬스터 웨이브 시스템을 구현하였습니다.
+
+---
+
+
 
 # 랜덤 던전 생성
 
@@ -69,7 +74,7 @@ Isometric 맵은 통상의 정사각형 Grid Map을 Isometric 좌표 변환을 �
 ##### Kruskal 알고리즘 으로 방 연결
 우선 던전의 경로에 순환이 없도록 방을 연결하고 싶었습니다.  
 
-최종적으로 기획된 방의 개수가 많지 않았고 이웃된 방 끼리 Edge를 생성할 예정이었기 때문에 MST의 알고리즘 중 Kruska알고리즘을 사용하여 방을 연결하였습니다.
+최종적으로 기획된 방의 개수가 많지 않았고 이웃된 방 끼리 Edge를 생성할 예정이었기 때문에 MST의 알고리즘 중 Kruskal알고리즘을 사용하여 방을 연결하였습니다.
 
 ```csharp
 private void GenerateDoors()
@@ -126,3 +131,8 @@ Force Spawn After Duration 체크 시 Wave Duration List에 각 웨이브의 시
 ## 방 타입 및 이벤트 설정
 ![]({{site.baseurl}}/assets/images/mapsystem_roomdesign_roomsetting.png)  
 방의 입장, 퇴장, 웨이브 클리어 시 에 Event를 바인딩 할 수 있도록 구현하였습니다. 웨이브 클리어 시, 방 중앙에 아이템 소환과 같은 형태의 방을 기획 할 수 있습니다.
+
+##### Dungeon Room Actions
+- Start Monster Wave Action : 몬스터 웨이브 시작
+- Spawn Item Action : 아이템 소환
+- Spawn Npc Action : Npc 소환

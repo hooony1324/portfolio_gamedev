@@ -119,7 +119,8 @@ Select된 결과로 Search를 시작하는데 **Search Box Area**는 설정한 �
 
 ## Animation & Custom Action
 ![SkillData Animation]({{site.baseurl}}/assets/images/skilldata_animation.png)  
-스킬 사용 시 재생할 애니메이션을 트리거 할 Hash값을 설정할 수 있습니다.
+스킬 사용 시 재생할 애니메이션을 트리거 할 Hash값을 설정할 수 있고, 스킬이 발동 할 때 Animator의 SetBool을 통해 애니메이션을 재생합니다.  
+
 스킬의 Apply가 발생할 때 Custom Action을 설정하여 카메라 진동과 같은 효과를 부여할 수 있습니다.
 
 <details markdown="1" class="toggle-container">
@@ -137,7 +138,7 @@ Select된 결과로 Search를 시작하는데 **Search Box Area**는 설정한 �
 <br>
 
 ![Stat 2]({{site.baseurl}}/assets/images/stat_2.png)  
-스탯 시스템을 통해 스킬의 쿨타임 감소와 같은 수치 보정이 가능합니다.
+스탯 쿨타임도 스킬의 쿨타임 감소와 같이 스탯을 통한 수치 보정이 가능합니다.
 
 # Effect
 ## Setting
