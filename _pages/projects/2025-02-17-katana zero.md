@@ -34,6 +34,8 @@ category: Projects
 4. 기타  
 역재생, 적 추격
 
+<br>
 
+📄 [문서 열기]({{site.baseurl}}/assets/files/김성훈_portfolio_dx11.pdf){:target="_blank" rel="noopener"}
 
 
